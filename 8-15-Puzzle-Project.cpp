@@ -40,6 +40,7 @@ int main(){
         cout<<"6. Iterative Deepening A* w/ Out-of-Place and Manhattan Distance Heuristics"<<endl;
         cin>>choice;
 
+        //the following calls the respective searching method to solve the puzzle
         if(choice==1)
             bfs(input,goal,dimension);
         else if(choice==2)
@@ -69,11 +70,10 @@ int main(){
             cout<<"Incorrect inputs for puzzle"<<endl;
             return 1;
         }
-
+        
+        //function to follow the movement sequence and print resulting state
         followSequence(input,goal,dimension);
     }
-
-    //create code to verify solution
     system("pause");
     return 0;
 }
