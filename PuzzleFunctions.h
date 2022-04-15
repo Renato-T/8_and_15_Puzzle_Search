@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int dimension, upLimit, downLimit, d8, d15, l1, l2, l3, l4, r1, r2, r3, r4;                  //This was the most straightforward way to implement the limits of the puzzle 
+int dimension, upLimit, downLimit, d8, d15, l1, l2, l3, l4, r1, r2, r3, r4;                 //This was the most straightforward way to implement the limits of the puzzle 
 
 void setDimensionInfo(int length){
     dimension=length;
@@ -42,11 +42,11 @@ struct nodule{
     char prev;
 };
 
-struct noduleWithIntData{                                       //Int data used for either heuristics or depth
+struct noduleWithIntData{                                                                   //Int data is used for either heuristics or depth
     int data;
     string state;
     char prev;
-    bool operator<(const noduleWithIntData &rhs) const{       //this allows this program to use a priority queue for this structure
+    bool operator<(const noduleWithIntData &rhs) const{         //This allows the program to use a priority queue for this structure
         return data>rhs.data;
     }
 };
@@ -79,7 +79,7 @@ int isVisitedAStar(vector<noduleWithIntData> &visited, string node){
     return -1;
 }
 
-int manhattanDistance(string input, string goal){
+int manhattanDistance(string input, string goal){                                           //Sums the horizontal and vertical displacement together
     int h=0;
     int inputT, goalT;
     for(int i=1; i<input.size(); ++i){
@@ -90,7 +90,7 @@ int manhattanDistance(string input, string goal){
     return h;
 }
 
-int outOfPlace(string input, string goal){
+int outOfPlace(string input, string goal){                                                  //Sums the amount of tiles that are not in the correct position                         
     int h=0;
     for(int i=0; i<input.size(); ++i)
         if(input.at(i) != '0')
@@ -104,6 +104,7 @@ void constructSolution(vector<nodule> &visited, nodule final, string initial){
     nodule tracker=final;
     int moveIndex;
     
+    //The following loop will "travel up the graph" to construct the solution
     while(tracker.state != initial){
         moveIndex=tracker.state.find('0');
         if(tracker.prev=='u'){
@@ -127,6 +128,7 @@ void constructSolution(vector<nodule> &visited, nodule final, string initial){
                 tracker=visited.at(i);
     }
     cout<<endl<<"Solution: "<<endl;
+    //The constructed solution is reversed so must be printed in the opposite order
     for(int i=solution.size()-1; i>=0; --i)
         cout<<solution.at(i);
 }
@@ -136,6 +138,7 @@ void constructSolutionIterative(vector<noduleWithIntData> &visited, noduleWithIn
     noduleWithIntData tracker=final;
     int moveIndex;
     
+    //The following loop will "travel up the graph" to construct the solution
     while(tracker.state != initial){
         moveIndex=tracker.state.find('0');
         if(tracker.prev=='u'){
@@ -159,6 +162,7 @@ void constructSolutionIterative(vector<noduleWithIntData> &visited, noduleWithIn
                 tracker=visited.at(i);
     }
     cout<<endl<<"Solution: "<<endl;
+    //The constructed solution is reversed so must be printed in the opposite order
     for(int i=solution.size()-1; i>=0; --i)
         cout<<solution.at(i);
 }
@@ -168,6 +172,7 @@ void constructSolutionAStar(vector<noduleWithIntData> &visited, noduleWithIntDat
     noduleWithIntData tracker=finalIndex;
     int moveIndex;
     
+    //The following loop will "travel up the graph" to construct the solution
     while(tracker.state != initial){
         moveIndex=tracker.state.find('0');
         if(tracker.prev=='u'){
@@ -191,6 +196,7 @@ void constructSolutionAStar(vector<noduleWithIntData> &visited, noduleWithIntDat
                 tracker=visited.at(i);
     }
     cout<<endl<<"Solution: "<<endl;
+    //The constructed solution is reversed so must be printed in the opposite order
     for(int i=solution.size()-1; i>=0; --i)
         cout<<solution.at(i);
 }
@@ -199,31 +205,31 @@ void moveOptionsQueue(vector<nodule> &visited, nodule &node, queue<nodule> &q){
     visited.push_back(node);
     nodule temp;
 
-    int moveIndex = node.state.find('0');                       //used for checking if moving up is possible
-    if(moveIndex > upLimit){                                          //pushes state from moving up into queue
+    int moveIndex = node.state.find('0');                               //Used for checking which moves are possible
+    if(moveIndex > upLimit){                                            //Move up state is added to queue
         temp.state = swap(node.state,moveIndex,moveIndex-dimension);
-        if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+        if(!isVisited(visited,temp.state)){
             temp.prev = 'u';
             q.push(temp);
         }
     }
-    if(moveIndex < downLimit){                                          //move down
+    if(moveIndex < downLimit){                                          //Move down state is added to queue
         temp.state = swap(node.state,moveIndex,moveIndex+dimension);
-        if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+        if(!isVisited(visited,temp.state)){
             temp.prev = 'd';
             q.push(temp);
         }
     }
-    if(moveIndex != l1 && moveIndex != l2 && moveIndex != l3 && moveIndex != l4){     //move left
+    if(moveIndex != l1 && moveIndex != l2 && moveIndex != l3 && moveIndex != l4){       //Move left state is added to queue
         temp.state = swap(node.state,moveIndex,moveIndex-1);
-        if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+        if(!isVisited(visited,temp.state)){
             temp.prev = 'l';
             q.push(temp);
         }
     }
-    if(moveIndex != r1 && moveIndex != r2 && moveIndex != r3 && moveIndex != r4){     //move right
+    if(moveIndex != r1 && moveIndex != r2 && moveIndex != r3 && moveIndex != r4){       //Move right state is added to queue
         temp.state = swap(node.state,moveIndex,moveIndex+1);
-        if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+        if(!isVisited(visited,temp.state)){
             temp.prev = 'r';
             q.push(temp);
         }
@@ -234,31 +240,31 @@ void moveOptionsStack(vector<nodule> &visited, nodule &node, stack<nodule> &stk)
     visited.push_back(node);
     nodule temp;
 
-    int moveIndex = node.state.find('0');                       //used for checking if moving up is possible
-    if(moveIndex > upLimit){                                          //pushes state from moving up into queue
+    int moveIndex = node.state.find('0');                               //Used for checking which moves are possible
+    if(moveIndex > upLimit){                                            //Move up state is added to stack
         temp.state = swap(node.state,moveIndex,moveIndex-dimension);
-        if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+        if(!isVisited(visited,temp.state)){
             temp.prev = 'u';
             stk.push(temp);
         }
     }
-    if(moveIndex < downLimit){                                          //move down
+    if(moveIndex < downLimit){                                          //Move down state is added to stack
         temp.state = swap(node.state,moveIndex,moveIndex+dimension);
-        if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+        if(!isVisited(visited,temp.state)){
             temp.prev = 'd';
             stk.push(temp);
         }
     }
-    if(moveIndex != l1 && moveIndex != l2 && moveIndex != l3 && moveIndex != l4){     //move left
+    if(moveIndex != l1 && moveIndex != l2 && moveIndex != l3 && moveIndex != l4){     //Move left state is added to stack
         temp.state = swap(node.state,moveIndex,moveIndex-1);
-        if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+        if(!isVisited(visited,temp.state)){
             temp.prev = 'l';
             stk.push(temp);
         }
     }
-    if(moveIndex != r1 && moveIndex != r2 && moveIndex != r3 && moveIndex != r4){     //move right
+    if(moveIndex != r1 && moveIndex != r2 && moveIndex != r3 && moveIndex != r4){     //Move right state is added to stack
         temp.state = swap(node.state,moveIndex,moveIndex+1);
-        if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+        if(!isVisited(visited,temp.state)){
             temp.prev = 'r';
             stk.push(temp);
         }
@@ -269,13 +275,13 @@ void moveOptionsPQ(vector<noduleWithIntData> &visited, noduleWithIntData &node, 
     visited.push_back(node);
     noduleWithIntData temp;
 
-    int moveIndex = node.state.find('0');                       //used for checking if moving up is possible
-    if(moveIndex > upLimit){                                          //pushes state from moving up into queue
+    int moveIndex = node.state.find('0');                               //Used for checking which moves are possible
+    if(moveIndex > upLimit){                                            //Move up state is added to priority queue
         temp.state = swap(node.state,moveIndex,moveIndex-dimension);
         temp.prev = 'u';
         temp.data=manhattanDistance(temp.state,goal)+outOfPlace(temp.state,goal)+node.data;
         prevIndex=isVisitedAStar(visited,temp.state);
-        if(prevIndex == -1)                                     //if new state has not been visited
+        if(prevIndex == -1)
             pq.push(temp);
         else
             if(temp.data < visited.at(prevIndex).data){
@@ -283,12 +289,12 @@ void moveOptionsPQ(vector<noduleWithIntData> &visited, noduleWithIntData &node, 
                 visited.at(prevIndex)=temp;
             }
     }
-    if(moveIndex < downLimit){                                          //move down
+    if(moveIndex < downLimit){                                                          //Move down state is added to priority queue
         temp.state = swap(node.state,moveIndex,moveIndex+dimension);
         temp.prev = 'd';
         temp.data=manhattanDistance(temp.state,goal)+outOfPlace(temp.state,goal)+node.data;
         prevIndex=isVisitedAStar(visited,temp.state);
-        if(prevIndex == -1)                                     //if new state has not been visited
+        if(prevIndex == -1)
             pq.push(temp);
         else
             if(temp.data < visited.at(prevIndex).data){
@@ -296,12 +302,12 @@ void moveOptionsPQ(vector<noduleWithIntData> &visited, noduleWithIntData &node, 
                 visited.at(prevIndex)=temp;
             }
     }
-    if(moveIndex != l1 && moveIndex != l2 && moveIndex != l3 && moveIndex != l4){     //move left
+    if(moveIndex != l1 && moveIndex != l2 && moveIndex != l3 && moveIndex != l4){       //Move left state is added to priority queue
         temp.state = swap(node.state,moveIndex,moveIndex-1);
         temp.prev = 'l';
         temp.data=manhattanDistance(temp.state,goal)+outOfPlace(temp.state,goal)+node.data;
         prevIndex=isVisitedAStar(visited,temp.state);
-        if(prevIndex == -1)                                     //if new state has not been visited
+        if(prevIndex == -1)
             pq.push(temp);
         else
             if(temp.data < visited.at(prevIndex).data){
@@ -309,12 +315,12 @@ void moveOptionsPQ(vector<noduleWithIntData> &visited, noduleWithIntData &node, 
                 visited.at(prevIndex)=temp;
             }
     }
-    if(moveIndex != r1 && moveIndex != r2 && moveIndex != r3 && moveIndex != r4){     //move right
+    if(moveIndex != r1 && moveIndex != r2 && moveIndex != r3 && moveIndex != r4){       //Move right state is added to priority queue
         temp.state = swap(node.state,moveIndex,moveIndex+1);
         temp.prev = 'r';
         temp.data=manhattanDistance(temp.state,goal)+outOfPlace(temp.state,goal)+node.data;
         prevIndex=isVisitedAStar(visited,temp.state);
-        if(prevIndex == -1)                                     //if new state has not been visited
+        if(prevIndex == -1)
             pq.push(temp);
         else
             if(temp.data < visited.at(prevIndex).data){
@@ -341,12 +347,12 @@ void bfs(string input, string goal, int length){
         if(node.state == goal)
             break;
 
-        if(!isVisited(visited,node.state)){                             //if node has not been visited 
+        if(!isVisited(visited,node.state)){
             nodesExpanded++;
-            moveOptionsQueue(visited,node,q);
+            moveOptionsQueue(visited,node,q);   //Places possible moves into queue
         }
     }
-    if(node.state == goal)                       //covers final case/constructing the solution
+    if(node.state == goal)
         constructSolution(visited,node,input);
     cout<<endl<<"Nodes Expanded by Breadth-First Search: "<<nodesExpanded<<endl;
     return;
@@ -369,12 +375,12 @@ void dfs(string input, string goal, int length){
         if(node.state == goal)
             break;
 
-        if(!isVisited(visited,node.state)){                             //if node has not been visited 
+        if(!isVisited(visited,node.state)){
             nodesExpanded++;
-            moveOptionsStack(visited,node,stk);
+            moveOptionsStack(visited,node,stk);     //Places possible moves into stack
         }
     }
-    if(node.state == goal)                       //covers final case/constructing the solution
+    if(node.state == goal)
         constructSolution(visited,node,input);
     cout<<endl<<"Nodes Expanded by Depth-First Search: "<<nodesExpanded<<endl;
     return;
@@ -402,47 +408,47 @@ void iddfs(string input, string goal, int length){
                 break;
             }            
 
-            if(!isVisited(visited,node.state) && node.data != limit){                             //if node has not been visited 
+            if(!isVisited(visited,node.state) && node.data != limit){               //Executes if node has not been visited and is within limit 
                 nodesExpanded++;
                 visited.push_back(node);
                 noduleWithIntData temp;
 
-                int moveIndex = node.state.find('0');                       //used for checking if moving up is possible
-                if(moveIndex > upLimit){                                          //pushes state from moving up into queue
+                int moveIndex = node.state.find('0');                               //Used for checking which moves are possible
+                if(moveIndex > upLimit){                                            //Move up state is added to stack
                     temp.state = swap(node.state,moveIndex,moveIndex-dimension);
                     temp.data = node.data+1;
-                    if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+                    if(!isVisited(visited,temp.state)){
                         temp.prev = 'u';
                         stk.push(temp);
                     }
                 }
-                if(moveIndex < downLimit){                                          //move down
+                if(moveIndex < downLimit){                                          //Move down state is added to stack
                     temp.state = swap(node.state,moveIndex,moveIndex+dimension);
                     temp.data = node.data+1;
-                    if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+                    if(!isVisited(visited,temp.state)){
                         temp.prev = 'd';
                         stk.push(temp);
                     }
                 }
-                if(moveIndex != l1 && moveIndex != l2 && moveIndex != l3 && moveIndex != l4){     //move left
+                if(moveIndex != l1 && moveIndex != l2 && moveIndex != l3 && moveIndex != l4){       //Move left state is added to stack
                     temp.state = swap(node.state,moveIndex,moveIndex-1);
                     temp.data = node.data+1;
-                    if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+                    if(!isVisited(visited,temp.state)){
                         temp.prev = 'l';
                         stk.push(temp);
                     }
                 }
-                if(moveIndex != r1 && moveIndex != r2 && moveIndex != r3 && moveIndex != r4){     //move right
+                if(moveIndex != r1 && moveIndex != r2 && moveIndex != r3 && moveIndex != r4){       //Move right state is added to stack
                     temp.state = swap(node.state,moveIndex,moveIndex+1);
                     temp.data = node.data+1;
-                    if(!isVisited(visited,temp.state)){                     //if new state has not been visited
+                    if(!isVisited(visited,temp.state)){
                         temp.prev = 'r';
                         stk.push(temp);
                     }
                 }
             }
         }
-        if(node.state == goal)                       //covers final case/constructing the solution
+        if(node.state == goal)
             constructSolutionIterative(visited,node,input);
         limit++;
     }
@@ -466,9 +472,9 @@ void astar(string input, string goal, int length){
         if(node.state == goal)
             break;
         int prevIndex=isVisitedAStar(visited,node.state);
-        if(prevIndex == -1){                             //if node has not been visited 
+        if(prevIndex == -1){
             nodesExpanded++;
-            moveOptionsPQ(visited,node,pq,goal,prevIndex);
+            moveOptionsPQ(visited,node,pq,goal,prevIndex);      //Places possible moves into stack
         }
     }
     if(node.state == goal)
@@ -491,13 +497,13 @@ void astarPROPER(string input, string goal, int length){        //DOES NOT STOP 
         pq.pop();
 
         int prevIndex=isVisitedAStar(visited,node.state);
-        if(prevIndex == -1){                             //if node has not been visited 
+        if(prevIndex == -1){
             nodesExpanded++;
-            moveOptionsPQ(visited,node,pq,goal,prevIndex);
+            moveOptionsPQ(visited,node,pq,goal,prevIndex);      //Places possible moves into stack
         }
     }
     int goalIndex=isVisitedAStar(visited,goal);
-    if(goalIndex != -1)                       //covers final case/constructing the solution
+    if(goalIndex != -1)
         constructSolutionAStar(visited,visited.at(goalIndex),input);
     cout<<endl<<"Nodes Expanded by A* Search: "<<nodesExpanded<<endl;
     return;
@@ -529,23 +535,25 @@ void astarIterative(string input, string goal, int length){
             }
 
             int prevIndex=isVisitedAStar(visited,node.state);
-            if(prevIndex == -1 && node.data <= limit){                             //if node has not been visited 
+            if(prevIndex == -1 && node.data <= limit){
                 nodesExpanded++;
-                moveOptionsPQ(visited,node,pq,goal,prevIndex);
+                moveOptionsPQ(visited,node,pq,goal,prevIndex);      //Places possible moves into stack
             }
         }
-        if(node.state == goal){                       //covers final case/constructing the solution
+        if(node.state == goal){
             constructSolutionAStar(visited,node,input);
             cout<<endl<<"Nodes Expanded by Iterative-Deepening A* Search: "<<nodesExpanded<<endl;
             return;
         }
         
+        //removes duplicates from threshold priority queue.
         int dupe=threshold.top();
         threshold.pop();
         while(dupe == threshold.top()){
             dupe = threshold.top();
             threshold.pop();
         }
+        //next unique threshold in priority queue is set to new limit
         limit=dupe;
     }
 }
@@ -553,6 +561,8 @@ void astarIterative(string input, string goal, int length){
 void followSequence(string startState, string moveSequence, int length){
     string tracker=startState;
     int moveIndex;
+
+    //tracker follows the movements transitioning into different states
     while(!moveSequence.empty()){
         moveIndex=tracker.find('0');
         if(moveSequence.at(0) == 'u')
@@ -565,6 +575,8 @@ void followSequence(string startState, string moveSequence, int length){
             tracker=swap(tracker, moveIndex, moveIndex+1);
         moveSequence.erase(0,1);
     }
+
+    //Prints output puzzle string as a table
     cout<<endl<<"End state: "<<endl;
     for(int i=0; i<(length*length); i+=length){
         cout<<"  ";
